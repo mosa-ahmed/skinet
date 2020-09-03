@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,8 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IProductRepository, ProductRepository>();
+
             //we need to add our dataContext or our StoreContext as a service so that we can use it in other parts of our application
             //after the step of adding our DbContext as a service, we look at entityframework migrations. and this gonna create us some code so that we can scaffold our databse and create our database, it's gonna take a look inside our StoreContext and it's gonna see that we 've got a DbSet property related to Product entity and it creates the table
 
