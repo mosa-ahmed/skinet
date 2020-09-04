@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Helpers;
+using AutoMapper;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
@@ -31,11 +33,14 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
 
             //we need to add our dataContext or our StoreContext as a service so that we can use it in other parts of our application
             //after the step of adding our DbContext as a service, we look at entityframework migrations. and this gonna create us some code so that we can scaffold our databse and create our database, it's gonna take a look inside our StoreContext and it's gonna see that we 've got a DbSet property related to Product entity and it creates the table
 
             services.AddControllers();
+
+            services.AddAutoMapper(typeof(MappingProfiles));
 
             services.AddDbContext<StoreContext>(x => x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
         }
@@ -54,6 +59,7 @@ namespace API
 
             //this middleware is responsible for getting us to the controller that we are hitting
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseAuthorization();
 

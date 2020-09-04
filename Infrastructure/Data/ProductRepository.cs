@@ -24,6 +24,11 @@ namespace Infrastructure.Data
 
         public async Task<IReadOnlyList<Product>> GetProductsAsync()
         {
+            //An IQueryable isn't sth that is executed against the database, it's building up a list of expressions to query the database against
+            
+            //Where(), Include(), ... all these expressions that return IQueryable Doesn't execute against the database until we execute .ToListAsync() or .ToList()
+            //.ToList() command is when the query goes to the database and executes whatever in these expressions of Where(), Include() ......
+            //so we pass an IQueryable to the ToList() to tell it what we want to fetch from the database
             return await _context.Products.Include(p => p.ProductBrand).Include(p => p.ProductType).ToListAsync();
         }
 
