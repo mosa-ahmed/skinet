@@ -9,13 +9,14 @@ using Core.Interfaces;
 using Core.Specifications;
 using AutoMapper;
 using API.Dtos;
+using API.Errors;
+using Microsoft.AspNetCore.Http;
 
 namespace API.Controllers
 {
     //[ApiController] => this is reponsible for mapping the parameters that are passed into our methods. So it's doing some validation to make sure that the route parameter is like what's inside the method (int) | (string)
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    
+    public class ProductsController : BaseApiController
     {
         private readonly IGenericRepository<Product> _productsRepo;
         private readonly IGenericRepository<ProductBrand> _productBrandRepo;
@@ -45,13 +46,21 @@ namespace API.Controllers
             return Ok(mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
         }
 
+        //these attributes are somehowe useful because it tells us instantly just by looking at the attributes of a method what it returns from each request, but we don't have to do this with every single method, this is stupid
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             //when we create a new instance of this below instead of calling the parameterless constructor, we are gonna be calling the constructor that takes a parameter and making use of the second constructor
             var spec = new ProductsWithTypesAndBrandsSpecification(id);
 
             var product = await _productsRepo.GetEntityWithSpec(spec);
+
+            //we do this to inform swagger or the client that this method can return 200ok or 404 reponse if we don't find the product that we are looking for
+            if (product == null) return NotFound(new ApiResponse(404));
+            //we have used our ApiResponse so that we can get our consistent errors
 
             return mapper.Map<Product, ProductToReturnDto>(product);
         }
