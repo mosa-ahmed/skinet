@@ -41,6 +41,16 @@ namespace API
 
             //Extension Method we have created
             services.AddSwaggerDocumentation();
+
+            //So we have one small task to go before we hand over our API to our client side developer and that's to enable cross origin resource sharing support otherwise known as cause so that we send back the appropriate header with our responses to the client and cores is a mechanism that's used to tell browsers to give a web application running at one origin access to selected resources from a different origin and for security reasons browsers restrict cross origin HTTP requests initiated from javascript.
+            //So if we want to see our results coming back from the API in the browser then we're going to need to send back across origin resource sharing header to enable that to happen. It's just a header that has to be passed down to the client
+            services.AddCors(opt => {
+                opt.AddPolicy("CorsPolicy", policy => {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"); //and what we'll do is we'll say opt and add policy and we'll give it a name of corspolicy and then the policy will give some settings and what we want to do is say policy and allow any header and allow any methods and what we'll do is specify with origins and we're just going to specify the U.R.L. where our client is gonna be coming from "https://localhost:4200".
+                                                                                                    //and we are basically telling our clients application that if it's running on an unsecured port we're not going to return any or we're not going to return a header that's going to allow our browser to display the information. so we are gonna configure our application to use HTTPS as well. 
+                                                                                                    //So after we've added the service we need to add the middleware for this as well.
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +69,8 @@ namespace API
             app.UseRouting();
             app.UseStaticFiles();
 
+            app.UseCors("CorsPolicy");  //and like I say we're not going to see much difference in postman but we should see the header coming back Once we specify the origin inside there.
+            
             app.UseAuthorization();
 
             //Extension Method we have created

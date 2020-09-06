@@ -29,6 +29,8 @@ namespace Infrastructure.Data
             //Where(), Include(), ... all these expressions that return IQueryable Doesn't execute against the database until we execute .ToListAsync() or .ToList()
             //.ToList() command is when the query goes to the database and executes whatever in these expressions of Where(), Include() ......
             //so we pass an IQueryable to the ToList() to tell it what we want to fetch from the database
+
+            //we also added support for Ordering (Sorting) into our specification so that we can make use of them and send this kind of query to our Specification Evaluator and then make use of that in our Generic Repository 
             return await _context.Products.Include(p => p.ProductBrand).Include(p => p.ProductType).ToListAsync();
         }
 

@@ -44,10 +44,18 @@ namespace Infrastructure.Data
         }
         //what we are gonna do next is how we can actually use what we have done here inside our controller so that we can actually get a list back that uses our specification
 
+        public async Task<int> CountAsync(ISpecification<T> spec)
+        {
+            return await ApplySpecification(spec).CountAsync();
+            //we have created a new specification so that we can use this specific method because we want the count of what's going on after filtering is applied
+        }
+
         private IQueryable<T> ApplySpecification(ISpecification<T> spec)
         {
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
             //here we have an IQueryable with those expressions that we can then pass to our database
         }
+
+        
     }
 }

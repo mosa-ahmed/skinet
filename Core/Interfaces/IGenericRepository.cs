@@ -11,5 +11,8 @@ namespace Core.Interfaces
          Task<IReadOnlyList<T>> ListAllAsync();
          Task<T> GetEntityWithSpec(ISpecification<T> spec);
          Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec);
+         
+         //This methhod is for counting the number of the items, and it's also going to take specifications so that we can apply the filters onto this as well
+         Task<int> CountAsync(ISpecification<T> spec);
     }
 }

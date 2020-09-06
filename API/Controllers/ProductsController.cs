@@ -11,6 +11,7 @@ using AutoMapper;
 using API.Dtos;
 using API.Errors;
 using Microsoft.AspNetCore.Http;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -35,15 +36,25 @@ namespace API.Controllers
         }
 
         //we make use of ActionResult that we 've got available because of using the ControllerBase
-        //Returning ActionResult means it's gonna be some kind of http response status: OK200 | 400BadRequest 
+        //Returning ActionResult means it's gonna be some kind of http response status: OK200 | 400BadRequest
+        //because we are sending up our parameters as a query string but we 've told our API controller that these are an object : ProductSpecParams productParams then this is gonna start to look at the body of the request and of course we don't have a body when we are using [HttpGet] request and this is confusing our API controller
+        //So what we need to do is to tell our API to go and look for these properties in the query string and we can do that by specifying this attribute : [FromQuery]
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productParams)
         {
-            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var spec = new ProductsWithTypesAndBrandsSpecification(productParams); //and we are going to configure our specification (ProductsWithTypesAndBrandsSpecification) to accommodate this
+
+            //Here we use our new spec for for the count as well
+            var countSpec = new ProductWithFiltersForCountSpecfication(productParams);
+
+            var totalItems = await _productsRepo.CountAsync(countSpec);
 
             //.ToList() command executes a select query on our database and return the results install them in this variable
             var products = await _productsRepo.ListAsync(spec);
-            return Ok(mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
+
+            var data = mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+
+            return Ok(new Pagination<ProductToReturnDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
         }
 
         //these attributes are somehowe useful because it tells us instantly just by looking at the attributes of a method what it returns from each request, but we don't have to do this with every single method, this is stupid

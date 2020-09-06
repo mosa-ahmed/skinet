@@ -17,5 +17,12 @@ namespace Core.Specifications
         //So we will use a BaseSpecification class that is gonna implement these interface methods 
 
         //Until now, Here we have two options: 1- we can get sth by some sort of criteria And 2- we can include navigation properties  
+
+        Expression<Func<T, object>> OrederBy {get; }
+        Expression<Func<T, object>> OrederByDescending {get; }
+
+        int Take {get;}
+        int Skip {get;}
+        bool IsPagingEnabled {get;}
     }
 }
