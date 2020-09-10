@@ -11,8 +11,8 @@ import { ShopParams } from '../shared/models/shopParams';
   styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit {
-  // tslint:disable-next-line: max-line-length
-  @ViewChild('search', {static: true}) searchTerm: ElementRef;  // if we are not using *ngIf with the Template Reference variable, then we say {static: true}
+  // tslint:disable-next-line: max-line-length    // static was true but we changed it to false because of ngIf() that we put on it in HTML
+  @ViewChild('search', {static: false}) searchTerm: ElementRef;  // if we are not using *ngIf with the Template Reference variable, then we say {static: true}
   products: IProduct[];
   brands: IBrand[];
   types: IType[];
