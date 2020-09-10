@@ -14,6 +14,7 @@ namespace API.Extensions
         {
             //we now have access to IServiceCollection inside here
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IBasketRepository, BasketRepository>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
 
             //we actually have to do this configuration here after this service [services.AddControllers();] IT IS A MUST
