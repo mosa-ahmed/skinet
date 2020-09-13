@@ -1,5 +1,6 @@
 using API.Errors;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -13,6 +14,13 @@ namespace API.Controllers
             _context = context;
         }
 
+        [HttpGet("testauth")]
+        [Authorize]     //What we should be able to see now is that we cannot access this method unless we're logged in with a user. And when I say logged in we won't be able to access this unless we send a valid JWT token to our server. that line passes the check it's going to validate the signature, It's gonna validate the issuer. And if those checks passed then it's going to let the user see what's inside here.
+        public ActionResult<string> GetSecretText()
+        {
+            return "secret stuff";
+        }
+
         [HttpGet("notfound")]
         public ActionResult GetNotFoundRequest()
         {
@@ -23,6 +31,7 @@ namespace API.Controllers
 
             return Ok();
         }
+
 
         [HttpGet("servererror")]
         public ActionResult GetServerError()

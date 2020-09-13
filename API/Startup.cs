@@ -3,6 +3,7 @@ using API.Helpers;
 using API.Middleware;
 using AutoMapper;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,11 @@ namespace API
 
             services.AddDbContext<StoreContext>(x => x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
         
+            //we are creating a new database here which is why we are specifying a separate service for this, we will have a completely separate databse for identity
+            services.AddDbContext<AppIdentityDbContext>(x => {
+                x.UseSqlite(_config.GetConnectionString("IdentityConnection"));
+            });
+            
             services.AddSingleton<IConnectionMultiplexer>(c => {
                 var configuration = ConfigurationOptions.Parse(_config.GetConnectionString("Redis"), true);
                 return ConnectionMultiplexer.Connect(configuration);
@@ -44,6 +50,9 @@ namespace API
 
             //Extension Method we have created
             services.AddApplicationServices();
+
+            //Extension Method we have created
+            services.AddIdentityServices(_config);
 
             //Extension Method we have created
             services.AddSwaggerDocumentation();
@@ -77,6 +86,7 @@ namespace API
 
             app.UseCors("CorsPolicy");  //and like I say we're not going to see much difference in postman but we should see the header coming back Once we specify the origin inside there.
             
+            app.UseAuthentication();
             app.UseAuthorization();
 
             //Extension Method we have created

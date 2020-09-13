@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Entities.Identity;
 using Infrastructure.Data;
 using Infrastructure.Data.SeedData;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +36,12 @@ namespace API
 //This method MigrateAsync() is what we are looking for, because we 've dropped our databse and we 've got a migration(InitialCreate) and when we start our application then we want to create our database using any migrations that we have
                     await context.Database.MigrateAsync();
                     await StoreContextSeed.SeedAsync(context, loggerFactory);
+
+
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+                    await identityContext.Database.MigrateAsync();
+                    await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
                 }
                 catch(Exception ex)
                 {
