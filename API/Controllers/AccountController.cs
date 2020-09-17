@@ -76,6 +76,7 @@ namespace API.Controllers
 
         }
 
+        //This method is for getting the token. the token is the nost important thing for authentication
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {

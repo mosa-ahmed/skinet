@@ -1,0 +1,25 @@
+<div class="form-label-group">                          <!--$event.target.value: this contains the text that the user is typing in-->   <!--id="{{label}}" because we acceessing label from our component, we need to give it template reference variable #input-->
+    <input [ngClass]="(controlDir && controlDir.control && controlDir.control.touched) ? !controlDir.control.valid ? 'is-invalid' : 'is-valid' : null"
+           [type]="type"
+           (change)="onChange($event.target.value)"
+           (blur)="onTouched()"
+           id="{{label}}"
+           #input
+           class="form-control" 
+           placeholder="{{label}}">
+
+    <!--here we check the control status, because when we are doing an asynchronous validation, our control status is gonna be given a PENDING status. so this is the ststus of our control when we are making an asynchronous validation request-->
+    <div *ngIf="controlDir && controlDir.control && controlDir.control.status === 'PENDING'" class="fa fa-spinner fa-spin loader"></div>
+
+    <label for="{{label}}">{{label}}</label>
+
+    <div class="invalid-feedback" *ngIf="(controlDir && controlDir.control && !controlDir.control.valid && controlDir.control.touched)">
+        <span *ngIf="controlDir.control.errors?.required">{{label}} is required</span>
+        <span *ngIf="controlDir.control.errors?.pattern">Invalid email address</span>
+    </div>
+
+    <div class="invalid-feedback d-block" *ngIf="(controlDir && controlDir.control && !controlDir.control.valid && controlDir.control.dirty)">
+        <span *ngIf="controlDir.control.errors?.emailExists">Email address is in use</span>
+    </div>
+
+  </div>
